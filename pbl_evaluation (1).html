@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12주차 PBL 중간발표 상호평가</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --navy: #0f2347;
+    --navy-mid: #1b3a6b;
+    --green: #2e7d32;
+    --green-light: #4caf50;
+    --gold: #f9a825;
+    --white: #ffffff;
+    --off: #f4f6fa;
+    --gray: #546e7a;
+    --light-gray: #eceff1;
+    --red: #c62828;
+    --text: #1a1a2e;
+    --card-shadow: 0 4px 24px rgba(15,35,71,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--off); color: var(--text); min-height: 100vh; }
+
+  /* ─── 헤더 ─── */
+  .site-header {
+    background: var(--navy); padding: 18px 24px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  }
+  .site-header .logo { display: flex; flex-direction: column; gap: 2px; }
+  .site-header .logo .week { font-size: 10px; color: var(--green-light); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+  .site-header .logo .title { font-size: 16px; color: #fff; font-weight: 700; }
+  .header-btn {
+    background: transparent; border: 1.5px solid rgba(255,255,255,0.3);
+    color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 12px;
+    cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s;
+  }
+  .header-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.6); }
+
+  /* ─── 설정 배너 ─── */
+  .setup-banner {
+    background: linear-gradient(135deg, #e65100, #f9a825);
+    color: #fff; padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px; line-height: 1.5;
+  }
+  .setup-banner .icon { font-size: 22px; flex-shrink: 0; }
+  .setup-banner strong { display: block; font-size: 14px; margin-bottom: 2px; }
+  .setup-banner a { color: #fff; font-weight: 700; text-decoration: underline; }
+  .setup-banner.hidden { display: none; }
+
+  /* ─── 페이지 전환 ─── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ─── 학생 평가 폼 ─── */
+  .eval-container { max-width: 640px; margin: 0 auto; padding: 24px 16px 60px; }
+  .eval-intro {
+    background: var(--navy-mid); border-radius: 16px; padding: 24px;
+    color: #fff; margin-bottom: 24px; position: relative; overflow: hidden;
+  }
+  .eval-intro::before {
+    content: ''; position: absolute; top: -30px; right: -30px;
+    width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%;
+  }
+  .eval-intro .badge {
+    display: inline-block; background: var(--green-light); color: #fff;
+    font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+    letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .eval-intro h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .eval-intro p { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.6; }
+
+  .section-card { background: #fff; border-radius: 14px; padding: 22px; margin-bottom: 18px; box-shadow: var(--card-shadow); }
+  .section-label {
+    font-size: 11px; font-weight: 700; color: var(--gray);
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label .num {
+    width: 22px; height: 22px; background: var(--navy); color: #fff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+  }
+
+  .group-select { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .group-btn {
+    border: 2px solid var(--light-gray); background: #fff; border-radius: 10px;
+    padding: 14px 8px; cursor: pointer; text-align: center;
+    transition: all 0.18s; font-family: 'Noto Sans KR', sans-serif;
+  }
+  .group-btn .g-name { font-size: 13px; font-weight: 700; color: var(--text); display: block; margin-bottom: 3px; }
+  .group-btn .g-sub { font-size: 10px; color: var(--gray); }
+  .group-btn:hover { border-color: var(--navy-mid); background: #f0f4ff; }
+  .group-btn.selected { border-color: var(--navy); background: var(--navy); }
+  .group-btn.selected .g-name { color: #fff; }
+  .group-btn.selected .g-sub { color: rgba(255,255,255,0.7); }
+  .group-btn.self-group { opacity: 0.4; pointer-events: none; cursor: not-allowed; }
+
+  .criteria-card {
+    background: #fff; border-radius: 14px; padding: 22px;
+    margin-bottom: 18px; box-shadow: var(--card-shadow); border-left: 4px solid var(--navy);
+  }
+  .criteria-title { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+  .criteria-icon { width: 38px; height: 38px; flex-shrink: 0; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .criteria-title .c-text h3 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .criteria-title .c-text p { font-size: 12px; color: var(--gray); line-height: 1.5; }
+
+  .star-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .star-wrap { display: flex; gap: 4px; }
+  .star { font-size: 28px; cursor: pointer; color: #ddd; transition: color 0.15s, transform 0.1s; line-height: 1; }
+  .star:hover, .star.lit { color: var(--gold); }
+  .star:active { transform: scale(1.2); }
+  .star-label { font-size: 12px; color: var(--gray); min-width: 60px; }
+
+  .feedback-textarea {
+    width: 100%; border: 1.5px solid var(--light-gray); border-radius: 10px;
+    padding: 12px 14px; font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px; line-height: 1.6; color: var(--text); resize: vertical;
+    min-height: 80px; transition: border-color 0.2s; background: #fafafa; margin-top: 14px;
+  }
+  .feedback-textarea:focus { outline: none; border-color: var(--navy); background: #fff; }
+  .feedback-textarea::placeholder { color: #aab; }
+
+  .submit-btn {
+    width: 100%; background: var(--navy); color: #fff; border: none;
+    border-radius: 12px; padding: 17px; font-size: 16px; font-weight: 700;
+    cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.2s, transform 0.1s; letter-spacing: 0.5px; margin-top: 8px;
+  }
+  .submit-btn:hover { background: var(--navy-mid); }
+  .submit-btn:active { transform: scale(0.98); }
+  .submit-btn:disabled { background: #aab; cursor: not-allowed; }
+
+  /* 제출 중 스피너 */
+  .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 3px solid rgba(255,255,255,0.4); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .success-screen { text-align: center; padding: 50px 24px; }
+  .success-icon { font-size: 64px; margin-bottom: 20px; }
+  .success-screen h2 { font-size: 22px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+  .success-screen p { font-size: 14px; color: var(--gray); line-height: 1.7; }
+
+  /* ─── 비밀번호 ─── */
+  .pw-screen { max-width: 400px; margin: 60px auto; padding: 0 16px; }
+  .pw-card { background: #fff; border-radius: 20px; padding: 36px 28px; box-shadow: 0 8px 40px rgba(15,35,71,0.13); text-align: center; }
+  .pw-card .lock { font-size: 48px; margin-bottom: 16px; }
+  .pw-card h2 { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .pw-card p { font-size: 13px; color: var(--gray); margin-bottom: 24px; }
+  .pw-input {
+    width: 100%; border: 2px solid var(--light-gray); border-radius: 10px;
+    padding: 13px 16px; font-size: 18px; text-align: center; letter-spacing: 4px;
+    font-family: 'DM Mono', monospace; color: var(--navy); margin-bottom: 14px; transition: border-color 0.2s;
+  }
+  .pw-input:focus { outline: none; border-color: var(--navy); }
+  .pw-btn { width: 100%; background: var(--navy); color: #fff; border: none; border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; }
+  .pw-error { color: var(--red); font-size: 13px; margin-top: 10px; }
+
+  /* ─── 대시보드 ─── */
+  .dash-container { max-width: 960px; margin: 0 auto; padding: 24px 16px 60px; }
+
+  /* 설정 카드 */
+  .config-card {
+    background: #fff; border-radius: 16px; padding: 22px; margin-bottom: 24px;
+    box-shadow: var(--card-shadow); border-left: 4px solid var(--gold);
+  }
+  .config-card h3 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .config-input {
+    width: 100%; border: 1.5px solid var(--light-gray); border-radius: 8px;
+    padding: 10px 14px; font-size: 13px; font-family: 'DM Mono', monospace;
+    color: var(--text); transition: border-color 0.2s; background: #fafafa;
+  }
+  .config-input:focus { outline: none; border-color: var(--navy); background: #fff; }
+  .config-save-btn {
+    margin-top: 10px; background: var(--navy); color: #fff; border: none;
+    border-radius: 8px; padding: 10px 20px; font-size: 13px; font-weight: 700;
+    cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+  }
+  .config-status { font-size: 12px; margin-top: 8px; }
+  .config-status.ok { color: var(--green); }
+  .config-status.err { color: var(--red); }
+
+  .qr-panel {
+    background: var(--navy); border-radius: 16px; padding: 24px;
+    margin-bottom: 24px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap;
+  }
+  .qr-box { background: #fff; border-radius: 12px; padding: 12px; flex-shrink: 0; }
+  .qr-info h3 { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .qr-info p { font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 12px; line-height: 1.6; }
+  .qr-url { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 12px; font-size: 11px; color: var(--gold); font-family: 'DM Mono', monospace; word-break: break-all; }
+
+  .dash-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .summary-card { background: var(--navy); border-radius: 14px; padding: 18px 20px; color: #fff; }
+  .summary-card .s-val { font-size: 32px; font-weight: 900; font-family: 'DM Mono', monospace; color: var(--gold); }
+  .summary-card .s-label { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 4px; }
+
+  .dash-tabs {
+    display: flex; gap: 8px; margin-bottom: 22px;
+    background: #fff; padding: 6px; border-radius: 12px; box-shadow: var(--card-shadow);
+  }
+  .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.18s; background: transparent; color: var(--gray); }
+  .tab-btn.active { background: var(--navy); color: #fff; font-weight: 700; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .group-result-card { background: #fff; border-radius: 16px; margin-bottom: 20px; box-shadow: var(--card-shadow); overflow: hidden; }
+  .group-result-header { background: var(--navy); padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; }
+  .group-result-header .g-info h3 { font-size: 17px; font-weight: 700; color: #fff; }
+  .group-result-header .g-info span { font-size: 12px; color: rgba(255,255,255,0.65); }
+  .group-avg-badge { background: var(--gold); color: var(--navy); font-weight: 900; font-size: 18px; padding: 6px 16px; border-radius: 20px; font-family: 'DM Mono', monospace; }
+  .criteria-scores { padding: 18px 22px; display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; border-bottom: 1px solid var(--light-gray); }
+  .c-score-block { text-align: center; }
+  .c-score-block .c-val { font-size: 26px; font-weight: 900; color: var(--navy); font-family: 'DM Mono', monospace; }
+  .c-score-block .c-name { font-size: 11px; color: var(--gray); margin-top: 2px; }
+  .stars-display { font-size: 13px; color: var(--gold); }
+  .comments-section { padding: 16px 22px; }
+  .comments-section h4 { font-size: 12px; font-weight: 700; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+  .comment-item { background: var(--off); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text); margin-bottom: 8px; line-height: 1.5; border-left: 3px solid var(--navy-mid); }
+  .comment-item .c-meta { font-size: 10px; color: var(--gray); margin-bottom: 3px; }
+
+  .no-data { text-align: center; padding: 40px 20px; color: var(--gray); font-size: 14px; }
+
+  /* 새로고침 버튼 */
+  .refresh-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .refresh-bar .last-update { font-size: 12px; color: var(--gray); }
+  .refresh-btn {
+    background: var(--green-light); color: #fff; border: none; border-radius: 8px;
+    padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif; display: flex; align-items: center; gap: 6px;
+  }
+  .refresh-btn:hover { background: var(--green); }
+
+  @media (max-width: 520px) {
+    .group-select { grid-template-columns: repeat(2, 1fr); }
+    .criteria-scores { grid-template-columns: 1fr; }
+    .qr-panel { flex-direction: column; }
+    .dash-summary { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ─── -->
+<header class="site-header">
+  <div class="logo">
+    <span class="week">12주차 · 6월 1일</span>
+    <span class="title">PBL 중간발표 상호평가</span>
+  </div>
+  <button class="header-btn" id="modeToggleBtn" onclick="showPasswordScreen()">교수자 모드</button>
+</header>
+
+<!-- ─── 설정 배너 (Apps Script URL 미입력 시 표시) ─── -->
+<div class="setup-banner" id="setupBanner">
+  <span class="icon">⚙️</span>
+  <div>
+    <strong>초기 설정 필요: Google Apps Script URL을 입력해 주세요</strong>
+    교수자 모드 → 비밀번호 입력 → Script URL 설정에서 입력하면 데이터가 Google Sheets에 저장됩니다.
+  </div>
+</div>
+
+<!-- ══════════ PAGE 1: 학생 평가 폼 ══════════ -->
+<div id="pageStudent" class="page active">
+  <div class="eval-container">
+
+    <div class="eval-intro">
+      <span class="badge">PEER EVALUATION</span>
+      <h2>조별 발표를 평가해 주세요</h2>
+      <p>발표를 들은 다른 조의 발표에 대해 3가지 기준으로 평가합니다.<br>평가 결과는 교수자만 확인하며, 학생들에게는 공개되지 않습니다.</p>
+    </div>
+
+    <!-- STEP 1: 우리 조 선택 -->
+    <div class="section-card">
+      <div class="section-label"><span class="num">1</span> 우리 조를 선택하세요</div>
+      <div class="group-select" id="myGroupSelect"></div>
+    </div>
+
+    <!-- STEP 2: 평가할 조 선택 -->
+    <div class="section-card">
+      <div class="section-label"><span class="num">2</span> 평가할 조를 선택하세요 <span style="font-size:10px;color:#aab;font-weight:400;">(우리 조 제외)</span></div>
+      <div class="group-select" id="targetGroupSelect"></div>
+    </div>
+
+    <!-- STEP 3: 평가 기준 -->
+    <div id="criteriaSection" style="display:none;">
+
+      <div class="criteria-card" style="border-left-color:#1b3a6b;">
+        <div class="criteria-title">
+          <div class="criteria-icon" style="background:#e8edf7;">💡</div>
+          <div class="c-text">
+            <h3>문제 정의의 명확성</h3>
+            <p>해결하려는 문제가 구체적이고 명확하게 제시되었는가?<br>누가, 어떤 상황에서 겪는 문제인지 잘 드러났는가?</p>
+          </div>
+        </div>
+        <div class="star-row"><div class="star-wrap" id="stars1"></div><span class="star-label" id="label1">선택 안 함</span></div>
+        <textarea class="feedback-textarea" id="comment1" placeholder="이 항목에 대한 구체적인 의견을 자유롭게 적어주세요 (선택)"></textarea>
+      </div>
+
+      <div class="criteria-card" style="border-left-color:#2e7d32;">
+        <div class="criteria-title">
+          <div class="criteria-icon" style="background:#e8f5e9;">🔧</div>
+          <div class="c-text">
+            <h3>해결 방안의 실현 가능성</h3>
+            <p>제안한 해결 방안이 실제로 실행 가능한 수준인가?<br>현실적이고 구체적인 방안이 제시되었는가?</p>
+          </div>
+        </div>
+        <div class="star-row"><div class="star-wrap" id="stars2"></div><span class="star-label" id="label2">선택 안 함</span></div>
+        <textarea class="feedback-textarea" id="comment2" placeholder="이 항목에 대한 구체적인 의견을 자유롭게 적어주세요 (선택)"></textarea>
+      </div>
+
+      <div class="criteria-card" style="border-left-color:#f9a825;">
+        <div class="criteria-title">
+          <div class="criteria-icon" style="background:#fff8e1;">📣</div>
+          <div class="c-text">
+            <h3>발표 전달력 및 팀 협업</h3>
+            <p>발표 내용이 명확하게 전달되었는가?<br>팀의 협업 과정과 역할분담이 잘 드러났는가?</p>
+          </div>
+        </div>
+        <div class="star-row"><div class="star-wrap" id="stars3"></div><span class="star-label" id="label3">선택 안 함</span></div>
+        <textarea class="feedback-textarea" id="comment3" placeholder="이 항목에 대한 구체적인 의견을 자유롭게 적어주세요 (선택)"></textarea>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitEval()">평가 제출하기</button>
+    </div>
+
+    <div id="successScreen" class="success-screen" style="display:none;">
+      <div class="success-icon">✅</div>
+      <h2>평가가 제출되었습니다!</h2>
+      <p>소중한 피드백 감사합니다.<br>평가 결과는 교수자만 확인할 수 있습니다.</p>
+      <br>
+      <button class="submit-btn" style="max-width:260px;margin:0 auto;display:block;" onclick="resetForm()">다른 조 평가하기</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ PAGE 2: 비밀번호 ══════════ -->
+<div id="pagePassword" class="page">
+  <div class="pw-screen">
+    <div class="pw-card">
+      <div class="lock">🔐</div>
+      <h2>교수자 전용 페이지</h2>
+      <p>평가 결과는 교수자만 확인할 수 있습니다.<br>비밀번호를 입력하세요.</p>
+      <input class="pw-input" type="password" id="pwInput" placeholder="• • • • • •" maxlength="10"
+        onkeydown="if(event.key==='Enter') checkPassword()">
+      <button class="pw-btn" onclick="checkPassword()">입장하기</button>
+      <div class="pw-error" id="pwError"></div>
+      <br>
+      <button class="header-btn" style="margin-top:12px;width:100%;border-color:#ddd;color:#888;"
+        onclick="showPage('pageStudent');updateHeaderBtn()">← 학생 평가 화면으로</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 3: 교수자 대시보드 ══════════ -->
+<div id="pageDash" class="page">
+  <div class="dash-container">
+
+    <!-- ① Script URL 설정 카드 -->
+    <div class="config-card">
+      <h3>⚙️ Google Apps Script URL 설정</h3>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:10px;">
+        아래에 배포한 Apps Script 웹 앱 URL을 입력하면 학생 평가가 Google Sheets에 실시간 저장됩니다.
+      </p>
+      <input class="config-input" type="text" id="scriptUrlInput"
+        placeholder="https://script.google.com/macros/s/AKfyc.../exec">
+      <br>
+      <button class="config-save-btn" onclick="saveScriptUrl()">URL 저장하기</button>
+      <div class="config-status" id="configStatus"></div>
+    </div>
+
+    <!-- ② QR 코드 -->
+    <div class="qr-panel">
+      <div class="qr-box" id="qrcode"></div>
+      <div class="qr-info">
+        <h3>📱 학생 평가 QR코드</h3>
+        <p>이 QR코드를 화면에 띄워 학생들이<br>스마트폰으로 스캔하여 평가할 수 있습니다.</p>
+        <div class="qr-url" id="qrUrlDisplay"></div>
+      </div>
+    </div>
+
+    <!-- ③ 요약 통계 -->
+    <div class="dash-summary" id="dashSummary"></div>
+
+    <!-- ④ 새로고침 -->
+    <div class="refresh-bar">
+      <span class="last-update" id="lastUpdate">마지막 업데이트: —</span>
+      <button class="refresh-btn" onclick="fetchAndBuild()">
+        <span id="refreshIcon">🔄</span> 데이터 새로고침
+      </button>
+    </div>
+
+    <!-- ⑤ 탭 -->
+    <div class="dash-tabs">
+      <button class="tab-btn active" onclick="switchTab(event,'tabResults')">📊 조별 결과</button>
+      <button class="tab-btn" onclick="switchTab(event,'tabRaw')">📋 전체 응답 목록</button>
+    </div>
+
+    <div class="tab-content active" id="tabResults"><div id="groupResultsArea"></div></div>
+    <div class="tab-content" id="tabRaw"><div id="rawDataArea"></div></div>
+
+    <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="header-btn" style="border-color:#ccc;color:#555;padding:10px 20px;" onclick="downloadCSV()">⬇ CSV 내보내기</button>
+      <button class="header-btn" style="border-color:#ccc;color:#888;padding:10px 20px;"
+        onclick="showPage('pageStudent');updateHeaderBtn()">← 학생 화면으로</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ JAVASCRIPT ══════════ -->
+<script>
+// ── 설정 ──────────────────────────────────────────────────────
+const ADMIN_PW  = "prof1234";   // ← 교수자 비밀번호 (변경 가능)
+const URL_KEY   = "pbl12_script_url";
+const GROUPS    = ["1조","2조","3조","4조","5조","6조","7조","8조","9조","10조"];
+const CRITERIA  = ["문제 정의의 명확성","해결 방안의 실현 가능성","발표 전달력 및 팀 협업"];
+const STAR_LABELS = ["","매우 미흡","미흡","보통","우수","매우 우수"];
+
+// ── 상태 ──────────────────────────────────────────────────────
+let myGroup    = null;
+let targetGroup = null;
+let stars      = [0, 0, 0];
+let cachedData = [];  // 서버에서 받은 데이터 캐시
+
+// ── Script URL ────────────────────────────────────────────────
+function getScriptUrl() { return localStorage.getItem(URL_KEY) || ""; }
+function saveScriptUrl() {
+  const url = document.getElementById('scriptUrlInput').value.trim();
+  if (!url.startsWith('https://script.google.com')) {
+    document.getElementById('configStatus').textContent = '❌ 올바른 Apps Script URL을 입력해 주세요.';
+    document.getElementById('configStatus').className = 'config-status err';
+    return;
+  }
+  localStorage.setItem(URL_KEY, url);
+  document.getElementById('configStatus').textContent = '✅ URL이 저장되었습니다. 이제 학생 평가가 Google Sheets에 저장됩니다.';
+  document.getElementById('configStatus').className = 'config-status ok';
+  document.getElementById('setupBanner').classList.add('hidden');
+  fetchAndBuild();
+}
+
+// ── 페이지 전환 ───────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function updateHeaderBtn() {
+  const btn = document.getElementById('modeToggleBtn');
+  const isStudent = document.getElementById('pageStudent').classList.contains('active');
+  btn.textContent = isStudent ? '교수자 모드' : '학생 평가 화면';
+  btn.onclick = isStudent ? showPasswordScreen : function(){ showPage('pageStudent'); updateHeaderBtn(); };
+}
+
+// ── 그룹 버튼 ─────────────────────────────────────────────────
+function renderGroupButtons() {
+  ['myGroupSelect','targetGroupSelect'].forEach((elId, side) => {
+    const el = document.getElementById(elId);
+    el.innerHTML = '';
+    GROUPS.forEach((g, i) => {
+      const btn = document.createElement('button');
+      const isMine    = myGroup === i;
+      const isTarget  = targetGroup === i;
+      btn.className = 'group-btn'
+        + (side === 0 && isMine   ? ' selected' : '')
+        + (side === 1 && isTarget ? ' selected' : '')
+        + (side === 1 && isMine   ? ' self-group' : '');
+      btn.innerHTML = `<span class="g-name">${g}</span><span class="g-sub">${
+        side === 1 && isMine ? '우리 조 제외' : (
+          side === 0 && isMine ? '선택됨' : '클릭하여 선택'
+        )
+      }</span>`;
+      btn.onclick = () => {
+        if (side === 0) { myGroup = i; }
+        else { if (myGroup === i) return; targetGroup = i; }
+        renderGroupButtons();
+        checkCriteriaVisible();
+      };
+      el.appendChild(btn);
+    });
+  });
+}
+function checkCriteriaVisible() {
+  document.getElementById('criteriaSection').style.display =
+    (myGroup !== null && targetGroup !== null && myGroup !== targetGroup) ? 'block' : 'none';
+}
+
+// ── 별점 ─────────────────────────────────────────────────────
+function renderStars() {
+  [1,2,3].forEach(idx => {
+    const wrap = document.getElementById('stars'+idx);
+    wrap.innerHTML = '';
+    for (let s = 1; s <= 5; s++) {
+      const span = document.createElement('span');
+      span.className = 'star' + (stars[idx-1] >= s ? ' lit' : '');
+      span.textContent = '★';
+      span.onmouseover = () => highlightStars(idx, s);
+      span.onmouseout  = () => highlightStars(idx, stars[idx-1]);
+      span.onclick     = () => { stars[idx-1] = s; renderStars(); };
+      wrap.appendChild(span);
+    }
+    document.getElementById('label'+idx).textContent =
+      stars[idx-1] > 0 ? STAR_LABELS[stars[idx-1]] + ' (' + stars[idx-1] + '/5)' : '선택 안 함';
+  });
+}
+function highlightStars(idx, val) {
+  Array.from(document.getElementById('stars'+idx).children).forEach((s,i) => s.classList.toggle('lit', i < val));
+}
+
+// ── 제출 (Google Sheets 저장) ─────────────────────────────────
+async function submitEval() {
+  if (myGroup === null || targetGroup === null) return alert('조를 선택해 주세요.');
+  if (stars.some(s => s === 0)) return alert('모든 항목에 별점을 입력해 주세요.');
+
+  const record = {
+    myGroup:     GROUPS[myGroup],
+    targetGroup: GROUPS[targetGroup],
+    scores:      [...stars],
+    comments: [
+      document.getElementById('comment1').value.trim(),
+      document.getElementById('comment2').value.trim(),
+      document.getElementById('comment3').value.trim(),
+    ]
+  };
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>제출 중...';
+
+  const scriptUrl = getScriptUrl();
+
+  if (!scriptUrl) {
+    // URL 미설정 시 로컬 저장 (fallback)
+    const arr = JSON.parse(localStorage.getItem('pbl12_local') || '[]');
+    record.timestamp = new Date().toLocaleString('ko-KR');
+    record.id = Date.now();
+    arr.push(record);
+    localStorage.setItem('pbl12_local', JSON.stringify(arr));
+    showSuccess();
+    return;
+  }
+
+  try {
+    // Google Apps Script에 POST
+    const res = await fetch(scriptUrl, {
+      method: 'POST',
+      mode: 'no-cors',      // Apps Script는 CORS 우회 필요
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'submit', data: record })
+    });
+    // no-cors 모드에서는 응답을 읽을 수 없으므로 성공으로 간주
+    showSuccess();
+  } catch (err) {
+    alert('제출 중 오류가 발생했습니다. 네트워크를 확인해 주세요.\n' + err);
+    btn.disabled = false;
+    btn.innerHTML = '평가 제출하기';
+  }
+}
+
+function showSuccess() {
+  document.getElementById('criteriaSection').style.display = 'none';
+  document.getElementById('successScreen').style.display = 'block';
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = false;
+  btn.innerHTML = '평가 제출하기';
+}
+
+function resetForm() {
+  myGroup = null; targetGroup = null; stars = [0,0,0];
+  renderGroupButtons(); renderStars();
+  ['comment1','comment2','comment3'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('successScreen').style.display = 'none';
+  document.getElementById('criteriaSection').style.display = 'none';
+  window.scrollTo(0,0);
+}
+
+// ── 비밀번호 ─────────────────────────────────────────────────
+function showPasswordScreen() {
+  showPage('pagePassword');
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwError').textContent = '';
+  updateHeaderBtn();
+}
+function checkPassword() {
+  const pw = document.getElementById('pwInput').value;
+  if (pw === ADMIN_PW) {
+    showPage('pageDash'); updateHeaderBtn();
+    // URL 입력창에 저장된 값 반영
+    const saved = getScriptUrl();
+    if (saved) {
+      document.getElementById('scriptUrlInput').value = saved;
+      document.getElementById('setupBanner').classList.add('hidden');
+    }
+    buildQR();
+    fetchAndBuild();
+  } else {
+    document.getElementById('pwError').textContent = '비밀번호가 올바르지 않습니다.';
+    document.getElementById('pwInput').value = '';
+  }
+}
+
+// ── QR 코드 ─────────────────────────────────────────────────
+function buildQR() {
+  const el = document.getElementById('qrcode');
+  el.innerHTML = '';
+  const url = location.href.split('#')[0];
+  document.getElementById('qrUrlDisplay').textContent = url;
+  new QRCode(el, { text: url, width: 140, height: 140, colorDark: "#0f2347", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+}
+
+// ── 데이터 가져오기 (Google Sheets) ──────────────────────────
+async function fetchAndBuild() {
+  const scriptUrl = getScriptUrl();
+  const icon = document.getElementById('refreshIcon');
+  icon.style.animation = 'spin 0.7s linear infinite';
+
+  let rows = [];
+
+  if (scriptUrl) {
+    try {
+      const res = await fetch(scriptUrl + '?action=getData', { cache: 'no-store' });
+      const json = await res.json();
+      rows = json.rows || [];
+    } catch (e) {
+      console.warn('서버 데이터 로드 실패, 로컬 데이터 사용:', e);
+    }
+  }
+
+  // fallback: 로컬 데이터 병합
+  const local = JSON.parse(localStorage.getItem('pbl12_local') || '[]');
+  const localFormatted = local.map(r => ({
+    timestamp:   r.timestamp,
+    myGroup:     r.myGroup,
+    targetGroup: r.targetGroup,
+    scores:      r.scores,
+    avg:         (r.scores.reduce((a,b)=>a+b,0)/3).toFixed(2),
+    comments:    r.comments
+  }));
+
+  // 서버 데이터 + 로컬 데이터 합치기 (서버 데이터 우선)
+  cachedData = rows.length > 0 ? rows : localFormatted;
+
+  icon.style.animation = '';
+  document.getElementById('lastUpdate').textContent = '마지막 업데이트: ' + new Date().toLocaleTimeString('ko-KR');
+
+  buildDashboard(cachedData);
+}
+
+// ── 대시보드 렌더 ─────────────────────────────────────────────
+function buildDashboard(evals) {
+  // 요약 통계
+  const summaryEl = document.getElementById('dashSummary');
+  const totalScore = evals.length > 0
+    ? (evals.reduce((s,e) => s + e.scores.reduce((a,b)=>a+b,0)/3, 0) / evals.length).toFixed(2)
+    : '—';
+  summaryEl.innerHTML = `
+    <div class="summary-card"><div class="s-val">${evals.length}</div><div class="s-label">총 평가 응답 수</div></div>
+    <div class="summary-card"><div class="s-val">${GROUPS.length}</div><div class="s-label">평가 대상 조 수</div></div>
+    <div class="summary-card"><div class="s-val">${totalScore}</div><div class="s-label">전체 평균 점수</div></div>
+  `;
+
+  // 조별 결과
+  const resultsEl = document.getElementById('groupResultsArea');
+  if (evals.length === 0) {
+    resultsEl.innerHTML = '<div class="no-data">⏳ 아직 제출된 평가가 없습니다.<br>학생들이 평가를 제출하면 여기에 표시됩니다.</div>';
+  } else {
+    resultsEl.innerHTML = '';
+    GROUPS.forEach(g => {
+      const ge = evals.filter(e => e.targetGroup === g);
+      if (ge.length === 0) return;
+      const avgTotal = (ge.reduce((s,e)=>s+e.scores.reduce((a,b)=>a+b,0)/3,0)/ge.length).toFixed(2);
+      const avgC = CRITERIA.map((_,ci) => (ge.reduce((s,e)=>s+Number(e.scores[ci]),0)/ge.length).toFixed(2));
+      const comments = ge.flatMap(e =>
+        e.comments.map((c,ci) => c ? {c, ci, from: e.myGroup, time: e.timestamp} : null).filter(Boolean)
+      );
+      const card = document.createElement('div');
+      card.className = 'group-result-card';
+      card.innerHTML = `
+        <div class="group-result-header">
+          <div class="g-info"><h3>${g}</h3><span>평가 수신 ${ge.length}건</span></div>
+          <div class="group-avg-badge">⭐ ${avgTotal}</div>
+        </div>
+        <div class="criteria-scores">
+          ${CRITERIA.map((name,ci) => `
+            <div class="c-score-block">
+              <div class="c-val">${avgC[ci]}</div>
+              <div class="stars-display">${'★'.repeat(Math.round(parseFloat(avgC[ci])))+'☆'.repeat(5-Math.round(parseFloat(avgC[ci])))}</div>
+              <div class="c-name">${name}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="comments-section">
+          <h4>📝 수강생 의견 (${comments.length}건)</h4>
+          ${comments.length === 0
+            ? '<div style="font-size:13px;color:#aab;">작성된 의견이 없습니다.</div>'
+            : comments.map(c => `
+              <div class="comment-item">
+                <div class="c-meta">[${CRITERIA[c.ci]}] · ${c.from} 작성 · ${c.time}</div>
+                ${c.c}
+              </div>`).join('')
+          }
+        </div>`;
+      resultsEl.appendChild(card);
+    });
+  }
+
+  // 전체 응답 목록
+  const rawEl = document.getElementById('rawDataArea');
+  if (evals.length === 0) {
+    rawEl.innerHTML = '<div class="no-data">아직 제출된 평가가 없습니다.</div>';
+  } else {
+    rawEl.innerHTML = evals.slice().reverse().map(e => `
+      <div class="section-card" style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-weight:700;font-size:14px;">${e.myGroup} → ${e.targetGroup} 평가</div>
+          <div style="font-size:11px;color:#aab;">${e.timestamp}</div>
+        </div>
+        ${CRITERIA.map((name,ci) => `
+          <div style="font-size:13px;margin-bottom:6px;">
+            <span style="color:#546e7a;">${name}: </span>
+            <span style="color:#f9a825;font-weight:700;">${'★'.repeat(Number(e.scores[ci]))} ${e.scores[ci]}점</span>
+            ${e.comments[ci] ? `<br><span style="color:#333;font-size:12px;">└ ${e.comments[ci]}</span>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+  }
+}
+
+function switchTab(ev, id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  ev.target.classList.add('active');
+}
+
+function downloadCSV() {
+  const evals = cachedData;
+  if (evals.length === 0) return alert('데이터가 없습니다.');
+  const header = ['제출시간','평가자 조','평가 대상 조',...CRITERIA.map(c=>c+'(점)'),...CRITERIA.map(c=>c+'(의견)')];
+  const rows = evals.map(e => [
+    e.timestamp, e.myGroup, e.targetGroup,
+    ...e.scores,
+    ...e.comments.map(c => '"'+(c||'').replace(/"/g,'""')+'"')
+  ]);
+  const csv = [header,...rows].map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'}));
+  a.download = '12주차_PBL_상호평가_결과.csv'; a.click();
+}
+
+// ── 초기 설정 배너 처리 ──────────────────────────────────────
+if (getScriptUrl()) document.getElementById('setupBanner').classList.add('hidden');
+
+// ── 초기화 ───────────────────────────────────────────────────
+renderGroupButtons();
+renderStars();
+</script>
+</body>
+</html>
